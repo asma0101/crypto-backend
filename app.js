@@ -4,10 +4,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
-
+const mongoose = require("mongoose");
+var connectionUri = require('./utilities/connection');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+var coinsRouter = require('./routes/coins');
 var app = express();
 
 // view engine setup
@@ -21,7 +22,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/coins', coinsRouter);
+app.use('/api/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -38,6 +40,12 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+const uri = connectionUri.uri;
+const params = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+};
+mongoose.connect(uri, params);
 app.listen(3006, function (err) {
   if (err) console.log("Error in server setup");
   console.log("Server listening on Port", 3006);

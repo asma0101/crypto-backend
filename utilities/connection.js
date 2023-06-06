@@ -1,0 +1,2 @@
+const credentials = require('../utilities/config').CREDENTIALS;
+exports.uri = `mongodb+srv://${credentials.username}:${credentials.password}@cluster0.xxs6m.mongodb.net/${credentials.database}?retryWrites=true&w=majority`;
