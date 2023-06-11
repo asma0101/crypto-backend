@@ -2,6 +2,7 @@ const errors = require('../utilities/messages');
 const axios = require('axios');
 const { KEY } = require('../utilities/config');
 const Coin = require('../models/coin.model');
+const localStore = require('../utilities/localStore');
 
 exports.getCoinsChains = (async (req, res) => {
     if (!req) {
@@ -33,12 +34,14 @@ exports.purchaseCoin = (async (req, res) => {
         res.status(500).send(errors.messages.SOMETHING_WENT_WRONG);
     }
     try {
+        const index = Math.floor(Math.random() * 10) + 1;
         let coin = new Coin({
           name: req.body.coin.name,
           rate: req.body.coin.rate,
-        userId: req.body.coin.userId,
-            
+          userId: req.body.coin.userId,
+          img: localStore.LOCAL_STORE[index] 
         });
+      
         let coinDoc = await Coin.find({
             $and: [
                 { name: req.body.coin.name },
@@ -49,6 +52,7 @@ exports.purchaseCoin = (async (req, res) => {
             res.status(500).send({ success: false, data: null, msg: errors.messages.ALREADY_PURCHASED });
         }
         else {
+            console.log(coin);
             const response = await coin.save();
             const updatedUserCoins = await Coin.find({userId: req.body.coin.userId})
             res.json({
